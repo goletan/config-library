@@ -2,8 +2,6 @@ module github.com/goletan/config
 
 go 1.23.1
 
-replace github.com/goletan => ../
-
 require (
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/spf13/viper v1.19.0
