@@ -32,6 +32,7 @@ func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
 
 	// Load common configuration files
 	loadConfigFiles([]string{
+		"./config/config.yaml",
 		"./config/override.yaml",
 		"./config/tests.yaml",
 	}, v, log)
