@@ -74,7 +74,7 @@ func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
 	v.WatchConfig()
 
 	if log != nil {
-		log.Info("Configuration loaded successfully")
+		log.Sugar().Infof("Configuration %s loaded successfully", configName)
 	}
 
 	// Cache the loaded configuration
