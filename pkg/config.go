@@ -1,23 +1,25 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/goletan/config/internal/config"
 	"go.uber.org/zap"
 )
 
 // LoadConfig is a wrapper function to load a configuration.
-func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
+func LoadConfig[T any](configName string, target *T, log *zap.Logger) error {
 	// Check if the config is already in cache
-	if cachedConfig, found := config.LoadConfigFromCache(configName); found {
-		if cachedTarget, ok := cachedConfig.(interface{}); ok {
-			*target.(*interface{}) = cachedTarget
-			return nil
-		}
-		return fmt.Errorf("invalid type for cached config")
+	if cachedConfig, found := config.LoadConfigFromCache[T](configName); found {
+		*target = *cachedConfig
+		return nil
 	}
 
 	// If not in cache, load from file and cache it
-	return config.LoadConfig(configName, target, log)
+	if err := config.LoadConfig(configName, target, log); err != nil {
+		return err
+	}
+
+	// Store the loaded config in cache
+	config.StoreConfigInCache(configName, target)
+
+	return nil
 }
