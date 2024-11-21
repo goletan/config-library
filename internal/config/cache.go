@@ -11,6 +11,13 @@ func StoreConfigInCache(configName string, config interface{}) {
 }
 
 // LoadConfigFromCache retrieves a configuration from the cache if it exists.
-func LoadConfigFromCache(configName string) (interface{}, bool) {
-	return configCache.Load(configName)
+func LoadConfigFromCache[T any](configName string) (*T, bool) {
+	if val, ok := configCache.Load(configName); ok {
+		cfg, isCorrectType := val.(*T)
+		if !isCorrectType {
+			return nil, false
+		}
+		return cfg, true
+	}
+	return nil, false
 }
