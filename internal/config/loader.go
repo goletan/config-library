@@ -1,3 +1,4 @@
+// /config/internal/config/loader.go
 package config
 
 import (
@@ -16,9 +17,9 @@ func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
 	v.SetConfigName(strings.ToLower(configName))
 	v.SetConfigType("yaml")
 
-	// Add common configuration paths
-	v.AddConfigPath(".")
-	v.AddConfigPath("./config")
+	// Define a more specific configuration path
+	// Configurations should now be in the root config directory of each "executable"
+	v.AddConfigPath("./config") // Path relative to the executable's root
 
 	// Load environment-specific configuration files with precedence
 	envConfigs := []string{"GOLETAN_PROD_CONFIG", "GOLETAN_STAGE_CONFIG", "GOLETAN_LOCAL_CONFIG"}
@@ -29,13 +30,6 @@ func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
 			loadConfigFiles([]string{configPath}, v, log)
 		}
 	}
-
-	// Load common configuration files
-	loadConfigFiles([]string{
-		"./config/config.yaml",
-		"./config/override.yaml",
-		"./config/tests.yaml",
-	}, v, log)
 
 	// Read the configuration file
 	if err := v.ReadInConfig(); err != nil {
