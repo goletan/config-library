@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	observability "github.com/goletan/observability/pkg"
 	"os"
 	"strings"
 
@@ -12,7 +11,7 @@ import (
 )
 
 // LoadConfig loads configuration from files into the provided target struct.
-func LoadConfig(configName string, target interface{}, obs *observability.Observability) error {
+func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
 	v := viper.New()
 	v.SetConfigName(strings.ToLower(configName))
 	v.SetConfigType("yaml")
@@ -27,37 +26,37 @@ func LoadConfig(configName string, target interface{}, obs *observability.Observ
 		envValue := os.Getenv(envVar)
 		if envValue != "" {
 			configPath := fmt.Sprintf("./config/%s.yaml", envValue)
-			loadConfigFiles([]string{configPath}, v, obs)
+			loadConfigFiles([]string{configPath}, v, log)
 		}
 	}
 
 	// Read the configuration file
 	if err := v.ReadInConfig(); err != nil {
-		obs.Logger.Error("Failed to read configuration file", zap.Error(err))
+		log.Error("Failed to read configuration file", zap.Error(err))
 		return fmt.Errorf("failed to read configuration file: %w", err)
 	}
 
 	// Unmarshal the configuration into the target struct
 	if err := v.Unmarshal(target); err != nil {
-		obs.Logger.Error("Failed to parse configuration", zap.Error(err))
+		log.Error("Failed to parse configuration", zap.Error(err))
 		return fmt.Errorf("failed to parse configuration: %w", err)
 	}
 
 	// Set up hot-reloading
 	v.OnConfigChange(func(e fsnotify.Event) {
-		obs.Logger.Info("Configuration file changed", zap.String("file", e.Name))
+		log.Info("Configuration file changed", zap.String("file", e.Name))
 
 		if err := v.Unmarshal(target); err != nil {
-			obs.Logger.Error("Failed to reload configuration", zap.Error(err))
+			log.Error("Failed to reload configuration", zap.Error(err))
 		} else {
-			obs.Logger.Info("Configuration reloaded successfully")
+			log.Info("Configuration reloaded successfully")
 			// Update the cache after reloading
 			StoreConfigInCache(configName, target)
 		}
 	})
 	v.WatchConfig()
 
-	obs.Logger.Info("Configuration loaded successfully", zap.String("configName", configName))
+	log.Info("Configuration loaded successfully", zap.String("configName", configName))
 
 	// Cache the loaded configuration
 	StoreConfigInCache(configName, target)
@@ -66,12 +65,12 @@ func LoadConfig(configName string, target interface{}, obs *observability.Observ
 }
 
 // loadConfigFiles attempts to load a list of configuration files in order, with precedence.
-func loadConfigFiles(configFiles []string, v *viper.Viper, obs *observability.Observability) {
+func loadConfigFiles(configFiles []string, v *viper.Viper, log *zap.Logger) {
 	for _, configPath := range configFiles {
 		if _, err := os.Stat(configPath); err == nil {
 			v.SetConfigFile(configPath)
 			if err := v.MergeInConfig(); err != nil {
-				obs.Logger.Warn("Failed to merge configuration file", zap.String("file", configPath), zap.Error(err))
+				log.Warn("Failed to merge configuration file", zap.String("file", configPath), zap.Error(err))
 			}
 		}
 	}
