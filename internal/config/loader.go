@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/goletan/observability/shared/logger"
 	"os"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 )
 
 // LoadConfig loads configuration from files into the provided target struct.
-func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
+func LoadConfig(configName string, target interface{}, log *logger.ZapLogger) error {
 	v := viper.New()
 	v.SetConfigName(strings.ToLower(configName))
 	v.SetConfigType("yaml")
@@ -65,7 +66,7 @@ func LoadConfig(configName string, target interface{}, log *zap.Logger) error {
 }
 
 // loadConfigFiles attempts to load a list of configuration files in order, with precedence.
-func loadConfigFiles(configFiles []string, v *viper.Viper, log *zap.Logger) {
+func loadConfigFiles(configFiles []string, v *viper.Viper, log *logger.ZapLogger) {
 	for _, configPath := range configFiles {
 		if _, err := os.Stat(configPath); err == nil {
 			v.SetConfigFile(configPath)
