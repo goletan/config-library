@@ -2,7 +2,7 @@ package config
 
 import (
 	"github.com/goletan/config/internal/config"
-	logger "github.com/goletan/logger/pkg"
+	logger "github.com/goletan/logger-library/pkg"
 	"go.uber.org/zap"
 )
 
@@ -19,7 +19,7 @@ func LoadConfig[T any](configName string, target *T, log *logger.ZapLogger) erro
 		log.WithContext(map[string]interface{}{
 			"step":    "config loading",
 			"error":   zap.Error(err),
-			"message": "Failed to load events configuration",
+			"message": "Failed to load events-service configuration",
 		})
 		return err
 	}

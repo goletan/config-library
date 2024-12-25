@@ -1,4 +1,4 @@
-module github.com/goletan/config
+module github.com/goletan/config-library
 
 go 1.23
 
