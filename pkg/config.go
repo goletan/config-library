@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/goletan/config/internal/config"
+	"github.com/goletan/config-library/internal/config"
 	logger "github.com/goletan/logger-library/pkg"
 	"go.uber.org/zap"
 )
