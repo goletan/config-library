@@ -9,7 +9,6 @@ require (
 )
 
 require (
-	github.com/goletan/logger v0.0.0-20241218143516-1326195937be // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
