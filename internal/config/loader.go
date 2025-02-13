@@ -57,8 +57,6 @@ func LoadConfig(configName string, target interface{}, log *logger.ZapLogger) er
 	})
 	v.WatchConfig()
 
-	log.Info("Configuration loaded successfully", zap.String("configName", configName))
-
 	// Cache the loaded configuration
 	StoreConfigInCache(configName, target)
 
